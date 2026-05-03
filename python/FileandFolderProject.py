@@ -1,26 +1,34 @@
 from pathlib import Path
 import os
+import shutil
+
 
 def create_folder():
     try:
         name = input("Enter the name of the folder : ")
         path = Path(name)
-        path.mkdir()
-        print("Folder created successfully")
-    
+
+        if not path.exists():
+            path.mkdir()
+            print("Folder created successfully")
+        else:
+            print("Folder already exists")
+
     except Exception as err:
-        print("Sorry an erro occurred : ", err)
+        print("Sorry an error occurred : ", err)
 
 
 def read_file_folder():
     try:
-        path = Path("")
-        items = list(path.rglob('*'))
+        path = Path.cwd()   # current working directory
+        items = list(path.iterdir())
 
-        #enumerate is used to get the index of the item in the list and the item itself differently
-        for i, item in enumerate(items):
-            print(f"{i + 1} : {item}")
-    
+        if not items:
+            print("Directory is empty")
+        else:
+            for i, item in enumerate(items):
+                print(f"{i + 1} : {item}")
+
     except Exception as err:
         print("Sorry an error occurred : ", err)
 
@@ -32,15 +40,19 @@ def update_folder():
 
         if path.exists() and path.is_dir():
             new_name = input("Enter the new name of the folder : ")
-            new_Path = Path(new_name)
-            path.rename(new_Path)
-            print("Folder name updated successfully")
+            new_path = Path(new_name)
+
+            if not new_path.exists():
+                path.rename(new_path)
+                print("Folder renamed successfully")
+            else:
+                print("A folder with that name already exists")
         else:
             print("Sorry no such folder exists")
-    
+
     except Exception as err:
         print("Sorry an error occurred : ", err)
-        
+
 
 def delete_folder():
     try:
@@ -48,11 +60,16 @@ def delete_folder():
         path = Path(name)
 
         if path.exists() and path.is_dir():
-            path.rmdir()
-            print("Folder deleted successfully")
-        else:            
+            confirm = input("⚠️ This will delete everything inside. Type 'yes' to confirm: ")
+
+            if confirm.lower() == "yes":
+                shutil.rmtree(path)
+                print("Folder deleted successfully")
+            else:
+                print("Deletion cancelled")
+        else:
             print("Sorry no such folder exists")
-    
+
     except Exception as err:
         print("Sorry an error occurred : ", err)
 
@@ -62,18 +79,17 @@ def create_file():
         read_file_folder()
         name = input("Enter the name of the file you want to create : ")
         path = Path(name)
-        
+
         if not path.exists():
             with open(name, 'w') as file:
-                data = input("Write what you want to write in the file :    ")
+                data = input("Write content : ")
                 file.write(data)
             print("File created successfully")
         else:
-            print("Sorry a file with the same name already exists")
-    
+            print("File already exists")
+
     except Exception as err:
         print("Sorry an error occurred : ", err)
-
 
 
 def read_file():
@@ -84,9 +100,8 @@ def read_file():
 
         if path.exists() and path.is_file():
             with open(name, 'r') as file:
-                content = file.read()
-                print("Your file content is :   ")
-                print(content)
+                print("\nFile Content:\n")
+                print(file.read())
         else:
             print("Sorry no such file exists")
 
@@ -97,43 +112,54 @@ def read_file():
 def update_file():
     try:
         read_file_folder()
-        name = input("Enter the name of the file you want to update : ")
+        name = input("Enter the file name : ")
         path = Path(name)
 
         if path.exists() and path.is_file():
 
-            print("Options : ")
-            print("1. Renaming the file")
-            print("2. Adding more content to the file")
-            print("3. Overwriting the file")
+            while True:
+                print("\nOptions:")
+                print("1. Rename file")
+                print("2. Append content")
+                print("3. Overwrite file")
+                print("4. Back")
 
-            choice = int(input("Enter your choice : "))
+                try:
+                    choice = int(input("Enter your choice : "))
+                except:
+                    print("Invalid input")
+                    continue
 
-            if choice == 1:
-                new_name = input("Enter the new name of the file : ")
-                new_path = Path(new_name)
+                if choice == 1:
+                    new_name = input("Enter new file name : ")
+                    new_path = Path(new_name)
 
-                if not new_path.exists():
-                    path.rename(new_path)
-                    print("File renamed successfully")
+                    if not new_path.exists():
+                        path.rename(new_path)
+                        print("File renamed successfully")
+                        break
+                    else:
+                        print("File with that name already exists")
+
+                elif choice == 2:
+                    with open(name, 'a') as file:
+                        data = input("Enter content to append : ")
+                        file.write(data)
+                    print("Content added successfully")
+                    break
+
+                elif choice == 3:
+                    with open(name, 'w') as file:
+                        data = input("Enter new content : ")
+                        file.write(data)
+                    print("File overwritten successfully")
+                    break
+
+                elif choice == 4:
+                    break
+
                 else:
-                    print("Sorry a file with the same name already exists")
-
-            elif choice == 2:
-                with open(name, 'a') as file:
-                    data = input("Write what you want to add in the file :    ")
-                    file.write(data)
-                print("File updated successfully")
-
-            elif choice == 3:
-                with open(name, 'w') as file:
-                    data = input("Write what you want to write in the file :    ")
-                    file.write(data)
-                print("File updated successfully")
-            
-            else:
-                print("Invalid choice")
-                update_file()
+                    print("Invalid choice")
 
         else:
             print("Sorry no such file exists")
@@ -145,12 +171,17 @@ def update_file():
 def delete_file():
     try:
         read_file_folder()
-        name = input("Enter the name of the file you want to delete : ")
+        name = input("Enter the file name you want to delete : ")
         path = Path(name)
 
         if path.exists() and path.is_file():
-            os.remove(name)
-            print("File deleted successfully")
+            confirm = input("Type 'yes' to confirm deletion: ")
+
+            if confirm.lower() == "yes":
+                os.remove(name)
+                print("File deleted successfully")
+            else:
+                print("Deletion cancelled")
         else:
             print("Sorry no such file exists")
 
@@ -158,44 +189,43 @@ def delete_file():
         print("Sorry an error occurred : ", err)
 
 
+# MAIN MENU LOOP
+while True:
+    print("\n===== FILE MANAGER =====")
+    print("1. Create folder")
+    print("2. View files/folders")
+    print("3. Rename folder")
+    print("4. Delete folder")
+    print("5. Create file")
+    print("6. Read file")
+    print("7. Update file")
+    print("8. Delete file")
+    print("9. Exit")
 
+    try:
+        choice = int(input("Enter your choice : "))
+    except:
+        print("Invalid input, try again")
+        continue
 
-print("Options :")
-
-print("1. Create a folder")
-print("2. Read files and folders")
-print("3. Update the folder")
-print("4. Delete the folder")
-print("5. Creation of a file")
-print("6. Read the file")
-print("7. Update a file")
-print("8. Delete a file")
-
-choice = int(input("Enter your choice : "))
-
-if choice == 1:
-    create_folder()
-
-elif choice == 2:
-    read_file_folder()
-
-elif choice == 3:
-    update_folder()
-
-elif choice == 4:
-    delete_folder()
-
-elif choice == 5:
-    create_file()
-
-elif choice == 6:
-    read_file()
-
-elif choice == 7:
-    update_file()
-
-elif choice == 8:
-    delete_file()
-
-else:
-    print("Invalid choice")
+    if choice == 1:
+        create_folder()
+    elif choice == 2:
+        read_file_folder()
+    elif choice == 3:
+        update_folder()
+    elif choice == 4:
+        delete_folder()
+    elif choice == 5:
+        create_file()
+    elif choice == 6:
+        read_file()
+    elif choice == 7:
+        update_file()
+    elif choice == 8:
+        delete_file()
+    elif choice == 9:
+        print("Exiting... 👋")
+        break
+    else:
+        print("Invalid choice")

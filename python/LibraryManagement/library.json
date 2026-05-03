@@ -1,0 +1,44 @@
+{
+    "books": [
+        {
+            "id": "B-5PFAK",
+            "title": "Game of Thrones",
+            "author": "Ritik",
+            "total_copies": 30,
+            "available_copies": 30,
+            "added_on": "2026-05-03 15:03:06"
+        },
+        {
+            "id": "B-5ENE4",
+            "title": "Breaking Bad",
+            "author": "Me",
+            "total_copies": 25,
+            "available_copies": 25,
+            "added_on": "2026-05-03 15:03:57"
+        },
+        {
+            "id": "B-7AYH5",
+            "title": "Cola-Cola",
+            "author": "Diet coke",
+            "total_copies": 60,
+            "available_copies": 60,
+            "added_on": "2026-05-03 15:56:02"
+        }
+    ],
+    "members": [
+        {
+            "id": "M-ZJY03",
+            "name": "Ritik",
+            "email": "ritik@gmail.com",
+            "borrowed": [],
+            "joined_on": "2026-05-03 15:23:27"
+        },
+        {
+            "id": "M-75MTT",
+            "name": "Me",
+            "email": "Me@gmail.com",
+            "borrowed": [],
+            "joined_on": "2026-05-03 15:56:48"
+        }
+    ]
+}
